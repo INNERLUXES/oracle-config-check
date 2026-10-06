@@ -1,0 +1,433 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "oracle-config-check",
+          "version": "1.0.0",
+          "informationUri": "https://github.com/INNERLUXES/oracle-config-check",
+          "rules": [
+            {
+              "id": "config-unreadable",
+              "name": "config-unreadable",
+              "shortDescription": {
+                "text": "the file is not JSON the reader can follow, or its top level is not an object, so no configuration was read"
+              },
+              "help": {
+                "text": "Write the configuration as one JSON object (docs/inputs.md), and fix the line named. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "field-missing",
+              "name": "field-missing",
+              "shortDescription": {
+                "text": "a field the checks need is not in the configuration: the protocol name or the assets, the name, network, role, feed or scaleDecimals of an asset, or a field its feed type needs"
+              },
+              "help": {
+                "text": "Add the field named; docs/inputs.md lists what each part of the configuration needs. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "field-unknown",
+              "name": "field-unknown",
+              "shortDescription": {
+                "text": "a key the tool does not read, often a misspelt one; its value was left out of every check"
+              },
+              "help": {
+                "text": "Correct the spelling to a key of docs/inputs.md, or remove the key. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "field-invalid",
+              "name": "field-invalid",
+              "shortDescription": {
+                "text": "a value of the wrong type or form: text where a number belongs, a role or feed type the tool does not know, seconds or decimals that are not whole numbers, a price that is not a plain decimal, or a field the feed type does not take"
+              },
+              "help": {
+                "text": "Write the value as docs/inputs.md shows: text for names and addresses, whole numbers for seconds and decimals, plain decimal numbers for prices and percents. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "asset-duplicate",
+              "name": "asset-duplicate",
+              "shortDescription": {
+                "text": "two assets share a name on one network (compared without case and outer spaces), so a reader cannot tell which line a finding comes from"
+              },
+              "help": {
+                "text": "Give each asset of a network a name of its own, or merge the two. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "secret-in-config",
+              "name": "secret-in-config",
+              "shortDescription": {
+                "text": "the configuration holds a key named for a private key, a seed or a mnemonic, or a value shaped like one; the tool never reads it and never shows it"
+              },
+              "help": {
+                "text": "Remove the key from the file and from the history of the repository, and treat it as exposed: move what it controls to a new key. An oracle configuration lists public addresses only. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "staleness-missing",
+              "name": "staleness-missing",
+              "shortDescription": {
+                "text": "a feed read through latestRoundData with no maxStaleness, or answer checks that do not list updatedAt, so the protocol takes an answer of any age"
+              },
+              "help": {
+                "text": "Give the asset a maxStaleness in seconds, from the heartbeat of the feed on its network, and list updatedAt in answerChecks. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "staleness-too-long",
+              "name": "staleness-too-long",
+              "shortDescription": {
+                "text": "maxStaleness is longer than the documented heartbeat of the feed plus the margin (--heartbeat-margin, 10 percent by default), so answers the feed should already have replaced are taken"
+              },
+              "help": {
+                "text": "Set maxStaleness to the heartbeat of the feed on this network plus a small margin, or record why the protocol accepts older answers. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "staleness-below-heartbeat",
+              "name": "staleness-below-heartbeat",
+              "shortDescription": {
+                "text": "maxStaleness is not longer than the documented heartbeat of the feed, so in a calm market every answer goes stale before the next one and reads revert"
+              },
+              "help": {
+                "text": "Set maxStaleness above the heartbeat of the feed on this network, with room for the delay before a round reaches the chain. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "bounds-missing",
+              "name": "bounds-missing",
+              "shortDescription": {
+                "text": "an asset read from a feed with no minPrice or no maxPrice, or a minPrice of 0, so an answer outside a sane range is taken as it is"
+              },
+              "help": {
+                "text": "Give the asset a minPrice above 0 and a maxPrice that the price of the asset should never reach, and pause or fall back on an answer outside them. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "decimals-mismatch",
+              "name": "decimals-mismatch",
+              "shortDescription": {
+                "text": "the decimals the protocol scales the answer by (scaleDecimals) are not the decimals the configuration gives for the feed"
+              },
+              "help": {
+                "text": "Scale by the decimals of the feed, or read decimals() from the feed at run time and write scaleDecimals as \"feed\". (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "sequencer-check-missing",
+              "name": "sequencer-check-missing",
+              "shortDescription": {
+                "text": "an asset on a rollup whose sequencer uptime feed the Chainlink page lists, with no sequencer check declared or with the check off"
+              },
+              "help": {
+                "text": "Read the sequencer uptime feed of the network before every read of a price, revert while it answers 1, and declare it under sequencer. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "sequencer-grace-missing",
+              "name": "sequencer-grace-missing",
+              "shortDescription": {
+                "text": "the sequencer check of an asset has no grace period, or a grace period of 0, so prices are used the moment the sequencer is back"
+              },
+              "help": {
+                "text": "Wait a grace period after the sequencer comes back, counted from startedAt of the uptime feed, such as the 3600 seconds of the example of the Chainlink page. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "answered-in-round-deprecated",
+              "name": "answered-in-round-deprecated",
+              "shortDescription": {
+                "text": "the answer checks list answeredInRound, which the Chainlink API reference marks as deprecated"
+              },
+              "help": {
+                "text": "Do not rest on answeredInRound for freshness; check updatedAt against maxStaleness. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "bounds-inverted",
+              "name": "bounds-inverted",
+              "shortDescription": {
+                "text": "minPrice is equal to or above maxPrice, so no answer, or only one, passes the bounds"
+              },
+              "help": {
+                "text": "Write minPrice below maxPrice. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "bounds-exclude-reference",
+              "name": "bounds-exclude-reference",
+              "shortDescription": {
+                "text": "the referencePrice the configuration gives for the asset is outside its minPrice and maxPrice, so the bounds reject a price the team calls plausible"
+              },
+              "help": {
+                "text": "Widen the bounds so that they hold the plausible price with room on both sides, or correct the referencePrice. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "answer-checks-undeclared",
+              "name": "answer-checks-undeclared",
+              "shortDescription": {
+                "text": "an asset read through latestRoundData whose configuration does not say which of its values the protocol checks (answerChecks)"
+              },
+              "help": {
+                "text": "List in answerChecks what the protocol checks on every read: updatedAt, answerPositive and, where it applies, roundComplete. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "answer-positive-unchecked",
+              "name": "answer-positive-unchecked",
+              "shortDescription": {
+                "text": "the answer checks of an asset do not list answerPositive, so an answer of 0 or below would be used as a price"
+              },
+              "help": {
+                "text": "Revert on an answer of 0 or below, and list answerPositive in answerChecks. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "address-malformed",
+              "name": "address-malformed",
+              "shortDescription": {
+                "text": "a feed address or a sequencer feed address that is not 0x followed by 40 hex digits, or is the zero address"
+              },
+              "help": {
+                "text": "Write the address of the proxy as 0x and 40 hex digits, as the list of feed addresses of the network shows it. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "feed-shared",
+              "name": "feed-shared",
+              "shortDescription": {
+                "text": "one feed address on one network prices two different assets, so one of them may get the price of the other"
+              },
+              "help": {
+                "text": "Give each asset the feed of its own pair, or record that one asset is priced by the feed of the other on purpose, such as a wrapped asset by the feed of the asset under it. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "single-source-collateral",
+              "name": "single-source-collateral",
+              "shortDescription": {
+                "text": "an asset used as collateral with one price source and no fallback, or a fallback that is the same feed"
+              },
+              "help": {
+                "text": "Give the collateral a fallback of another kind (a second oracle or a time-weighted average price) and say what the protocol does when the two disagree, or record why one source is enough. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "pegged-price-hardcoded",
+              "name": "pegged-price-hardcoded",
+              "shortDescription": {
+                "text": "an asset used as collateral whose price is fixed in the configuration (feed type fixed), such as a stablecoin valued at 1 whatever the market says"
+              },
+              "help": {
+                "text": "Price the asset from a feed, with an upper bound such as a ceiling for a stablecoin, so that a loss of the peg reaches the protocol. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "network-not-in-table",
+              "name": "network-not-in-table",
+              "shortDescription": {
+                "text": "the network is not in the tool's table of networks, so whether it needs a sequencer uptime check was not judged"
+              },
+              "help": {
+                "text": "Check by hand whether the network runs a sequencer and how the protocol learns that it is down, or name the network as the table does (docs/inputs.md). (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            }
+          ]
+        }
+      },
+      "artifacts": [
+        {
+          "location": {
+            "uri": "examples/good/oracles.json"
+          }
+        }
+      ],
+      "results": [
+        {
+          "ruleId": "network-not-in-table",
+          "ruleIndex": 22,
+          "level": "note",
+          "message": {
+            "text": "The network \"linea\" of asset LINK on linea is not in the tool's table (ethereum, polygon, bnb, avalanche, gnosis, arbitrum, base, celo, mantle, megaeth, metis, optimism, scroll, soneium, x-layer, zksync), so whether it runs a sequencer that needs an uptime check was not judged. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: Check by hand whether the network runs a sequencer and how the protocol learns that it is down, or name the network as the table does (docs/inputs.md)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/good/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 187,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "LINK on linea"
+          }
+        }
+      ],
+      "properties": {
+        "notice": "This report is an input to a review before the protocol is deployed: not a security audit and not a guarantee that the oracle of the protocol cannot be manipulated or fail.",
+        "result": "PASS - no finding at or above error (1 info)",
+        "sources": [
+          "https://docs.chain.link/data-feeds/overview",
+          "https://docs.chain.link/architecture-overview/architecture-decentralized-model",
+          "https://docs.chain.link/data-feeds/api-reference",
+          "https://docs.chain.link/data-feeds/using-data-feeds",
+          "https://docs.chain.link/data-feeds/l2-sequencer-feeds",
+          "https://docs.chain.link/data-feeds/selecting-data-feeds",
+          "https://ethereum.org/en/developers/docs/smart-contracts/security/"
+        ]
+      }
+    }
+  ]
+}

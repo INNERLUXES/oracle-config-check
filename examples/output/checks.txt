@@ -1,0 +1,27 @@
+oracle-config-check checks
+
+  config-unreadable             error    input          the file is not JSON the reader can follow, or its top level is not an object, so no configuration was read
+  field-missing                 error    input          a field the checks need is not in the configuration: the protocol name or the assets, the name, network, role, feed or scaleDecimals of an asset, or a field its feed type needs
+  field-unknown                 warning  input          a key the tool does not read, often a misspelt one; its value was left out of every check
+  field-invalid                 error    input          a value of the wrong type or form: text where a number belongs, a role or feed type the tool does not know, seconds or decimals that are not whole numbers, a price that is not a plain decimal, or a field the feed type does not take
+  asset-duplicate               error    input          two assets share a name on one network (compared without case and outer spaces), so a reader cannot tell which line a finding comes from
+  secret-in-config              error    input          the configuration holds a key named for a private key, a seed or a mnemonic, or a value shaped like one; the tool never reads it and never shows it
+  staleness-missing             error    documented     a feed read through latestRoundData with no maxStaleness, or answer checks that do not list updatedAt, so the protocol takes an answer of any age
+  staleness-too-long            warning  documented     maxStaleness is longer than the documented heartbeat of the feed plus the margin (--heartbeat-margin, 10 percent by default), so answers the feed should already have replaced are taken
+  staleness-below-heartbeat     warning  documented     maxStaleness is not longer than the documented heartbeat of the feed, so in a calm market every answer goes stale before the next one and reads revert
+  bounds-missing                warning  documented     an asset read from a feed with no minPrice or no maxPrice, or a minPrice of 0, so an answer outside a sane range is taken as it is
+  decimals-mismatch             error    documented     the decimals the protocol scales the answer by (scaleDecimals) are not the decimals the configuration gives for the feed
+  sequencer-check-missing       error    documented     an asset on a rollup whose sequencer uptime feed the Chainlink page lists, with no sequencer check declared or with the check off
+  sequencer-grace-missing       error    documented     the sequencer check of an asset has no grace period, or a grace period of 0, so prices are used the moment the sequencer is back
+  answered-in-round-deprecated  info     documented     the answer checks list answeredInRound, which the Chainlink API reference marks as deprecated
+  bounds-inverted               error    best practice  minPrice is equal to or above maxPrice, so no answer, or only one, passes the bounds
+  bounds-exclude-reference      error    best practice  the referencePrice the configuration gives for the asset is outside its minPrice and maxPrice, so the bounds reject a price the team calls plausible
+  answer-checks-undeclared      warning  best practice  an asset read through latestRoundData whose configuration does not say which of its values the protocol checks (answerChecks)
+  answer-positive-unchecked     warning  best practice  the answer checks of an asset do not list answerPositive, so an answer of 0 or below would be used as a price
+  address-malformed             error    best practice  a feed address or a sequencer feed address that is not 0x followed by 40 hex digits, or is the zero address
+  feed-shared                   warning  best practice  one feed address on one network prices two different assets, so one of them may get the price of the other
+  single-source-collateral      warning  best practice  an asset used as collateral with one price source and no fallback, or a fallback that is the same feed
+  pegged-price-hardcoded        error    best practice  an asset used as collateral whose price is fixed in the configuration (feed type fixed), such as a stablecoin valued at 1 whatever the market says
+  network-not-in-table          info     best practice  the network is not in the tool's table of networks, so whether it needs a sequencer uptime check was not judged
+
+A documented check rests on the Chainlink pages on Data Feeds; a best practice check is this tool's own choice and says so in its message. An input check is about the configuration file itself.

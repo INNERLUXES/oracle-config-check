@@ -1,0 +1,209 @@
+{
+  "protocol": "Harbor Example Lending",
+  "notes": "A made-up configuration for the examples of oracle-config-check. Every address is made up and is not a real feed, and the file holds no key and no seed.",
+  "assets": [
+    {
+      "name": "WETH",
+      "network": "ethereum",
+      "role": "both",
+      "feed": {
+        "type": "chainlink",
+        "pair": "ETH / USD",
+        "address": "0x1111111111111111111111111111111111111111",
+        "heartbeat": 3600,
+        "deviation": 0.5,
+        "decimals": 8
+      },
+      "fallback": {
+        "type": "twap",
+        "address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "window": 1800
+      },
+      "maxStaleness": 3780,
+      "minPrice": 100,
+      "maxPrice": 100000,
+      "referencePrice": 3500,
+      "scaleDecimals": 8,
+      "answerChecks": [
+        "updatedAt",
+        "answerPositive",
+        "roundComplete"
+      ]
+    },
+    {
+      "name": "WBTC",
+      "network": "ethereum",
+      "role": "collateral",
+      "feed": {
+        "type": "chainlink",
+        "pair": "WBTC / USD",
+        "address": "0x2222222222222222222222222222222222222222",
+        "heartbeat": 86400,
+        "deviation": 0.5,
+        "decimals": 8
+      },
+      "fallback": {
+        "type": "chainlink",
+        "pair": "BTC / USD",
+        "address": "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "heartbeat": 3600,
+        "decimals": 8
+      },
+      "maxStaleness": 90720,
+      "minPrice": 1000,
+      "maxPrice": 1000000,
+      "referencePrice": 60000,
+      "scaleDecimals": "feed",
+      "answerChecks": [
+        "updatedAt",
+        "answerPositive",
+        "roundComplete"
+      ]
+    },
+    {
+      "name": "USDC",
+      "network": "ethereum",
+      "role": "both",
+      "feed": {
+        "type": "chainlink",
+        "pair": "USDC / USD",
+        "address": "0x3333333333333333333333333333333333333333",
+        "heartbeat": 86400,
+        "deviation": 0.25,
+        "decimals": 8
+      },
+      "fallback": {
+        "type": "twap",
+        "address": "0xcccccccccccccccccccccccccccccccccccccccc",
+        "window": 1800
+      },
+      "maxStaleness": 90720,
+      "minPrice": 0.5,
+      "maxPrice": 1.05,
+      "referencePrice": 1,
+      "scaleDecimals": 8,
+      "answerChecks": [
+        "updatedAt",
+        "answerPositive",
+        "roundComplete"
+      ]
+    },
+    {
+      "name": "WETH",
+      "network": "arbitrum",
+      "role": "collateral",
+      "feed": {
+        "type": "chainlink",
+        "pair": "ETH / USD",
+        "address": "0x4444444444444444444444444444444444444444",
+        "heartbeat": 86400,
+        "deviation": 0.05,
+        "decimals": 8
+      },
+      "fallback": {
+        "type": "twap",
+        "address": "0xdddddddddddddddddddddddddddddddddddddddd",
+        "window": 1800
+      },
+      "maxStaleness": 90720,
+      "minPrice": 100,
+      "maxPrice": 100000,
+      "referencePrice": 3500,
+      "scaleDecimals": 8,
+      "sequencer": {
+        "checked": true,
+        "feed": "0x5555555555555555555555555555555555555555",
+        "gracePeriod": 3600
+      },
+      "answerChecks": [
+        "updatedAt",
+        "answerPositive",
+        "roundComplete"
+      ]
+    },
+    {
+      "name": "ARB",
+      "network": "arbitrum",
+      "role": "borrowable",
+      "feed": {
+        "type": "chainlink",
+        "pair": "ARB / USD",
+        "address": "0x6666666666666666666666666666666666666666",
+        "heartbeat": 86400,
+        "deviation": 0.1,
+        "decimals": 8
+      },
+      "maxStaleness": 90720,
+      "minPrice": 0.01,
+      "maxPrice": 100,
+      "referencePrice": 0.75,
+      "scaleDecimals": 8,
+      "sequencer": {
+        "checked": true,
+        "feed": "0x5555555555555555555555555555555555555555",
+        "gracePeriod": 3600
+      },
+      "answerChecks": [
+        "updatedAt",
+        "answerPositive",
+        "roundComplete"
+      ]
+    },
+    {
+      "name": "WETH",
+      "network": "base",
+      "role": "collateral",
+      "feed": {
+        "type": "chainlink",
+        "pair": "ETH / USD",
+        "address": "0x7777777777777777777777777777777777777777",
+        "heartbeat": 1200,
+        "deviation": 0.15,
+        "decimals": 8
+      },
+      "fallback": {
+        "type": "twap",
+        "address": "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "window": 1800
+      },
+      "maxStaleness": 1260,
+      "minPrice": 100,
+      "maxPrice": 100000,
+      "referencePrice": 3500,
+      "scaleDecimals": 8,
+      "sequencer": {
+        "checked": true,
+        "feed": "0x8888888888888888888888888888888888888888",
+        "gracePeriod": 3600
+      },
+      "answerChecks": [
+        "updatedAt",
+        "answerPositive",
+        "roundComplete"
+      ]
+    },
+    {
+      "name": "LINK",
+      "network": "linea",
+      "role": "borrowable",
+      "feed": {
+        "type": "chainlink",
+        "pair": "LINK / USD",
+        "address": "0x9999999999999999999999999999999999999999",
+        "heartbeat": 86400,
+        "deviation": 0.5,
+        "decimals": 8
+      },
+      "maxStaleness": 90720,
+      "minPrice": 0.5,
+      "maxPrice": 1000,
+      "referencePrice": 15,
+      "scaleDecimals": 8,
+      "answerChecks": [
+        "updatedAt",
+        "answerPositive",
+        "roundComplete"
+      ]
+    }
+  ]
+}

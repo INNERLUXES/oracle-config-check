@@ -1,0 +1,288 @@
+{
+  "tool": "oracle-config-check",
+  "version": "1.0.0",
+  "input": {
+    "file": "examples/good/oracles.json",
+    "bytes": 5278,
+    "lines": 209
+  },
+  "protocol": {
+    "name": "Harbor Example Lending",
+    "assets": 7,
+    "collateral": 5,
+    "networks": [
+      "ethereum",
+      "arbitrum",
+      "base",
+      "linea"
+    ]
+  },
+  "totals": {
+    "findings": 1,
+    "byLevel": {
+      "error": 0,
+      "warning": 0,
+      "info": 1
+    },
+    "hidden": 0
+  },
+  "rules": [
+    {
+      "id": "config-unreadable",
+      "level": "error",
+      "kind": "input",
+      "findings": 0
+    },
+    {
+      "id": "field-missing",
+      "level": "error",
+      "kind": "input",
+      "findings": 0
+    },
+    {
+      "id": "field-unknown",
+      "level": "warning",
+      "kind": "input",
+      "findings": 0
+    },
+    {
+      "id": "field-invalid",
+      "level": "error",
+      "kind": "input",
+      "findings": 0
+    },
+    {
+      "id": "asset-duplicate",
+      "level": "error",
+      "kind": "input",
+      "findings": 0
+    },
+    {
+      "id": "secret-in-config",
+      "level": "error",
+      "kind": "input",
+      "findings": 0
+    },
+    {
+      "id": "staleness-missing",
+      "level": "error",
+      "kind": "documented",
+      "findings": 0
+    },
+    {
+      "id": "staleness-too-long",
+      "level": "warning",
+      "kind": "documented",
+      "findings": 0
+    },
+    {
+      "id": "staleness-below-heartbeat",
+      "level": "warning",
+      "kind": "documented",
+      "findings": 0
+    },
+    {
+      "id": "bounds-missing",
+      "level": "warning",
+      "kind": "documented",
+      "findings": 0
+    },
+    {
+      "id": "decimals-mismatch",
+      "level": "error",
+      "kind": "documented",
+      "findings": 0
+    },
+    {
+      "id": "sequencer-check-missing",
+      "level": "error",
+      "kind": "documented",
+      "findings": 0
+    },
+    {
+      "id": "sequencer-grace-missing",
+      "level": "error",
+      "kind": "documented",
+      "findings": 0
+    },
+    {
+      "id": "answered-in-round-deprecated",
+      "level": "info",
+      "kind": "documented",
+      "findings": 0
+    },
+    {
+      "id": "bounds-inverted",
+      "level": "error",
+      "kind": "best practice",
+      "findings": 0
+    },
+    {
+      "id": "bounds-exclude-reference",
+      "level": "error",
+      "kind": "best practice",
+      "findings": 0
+    },
+    {
+      "id": "answer-checks-undeclared",
+      "level": "warning",
+      "kind": "best practice",
+      "findings": 0
+    },
+    {
+      "id": "answer-positive-unchecked",
+      "level": "warning",
+      "kind": "best practice",
+      "findings": 0
+    },
+    {
+      "id": "address-malformed",
+      "level": "error",
+      "kind": "best practice",
+      "findings": 0
+    },
+    {
+      "id": "feed-shared",
+      "level": "warning",
+      "kind": "best practice",
+      "findings": 0
+    },
+    {
+      "id": "single-source-collateral",
+      "level": "warning",
+      "kind": "best practice",
+      "findings": 0
+    },
+    {
+      "id": "pegged-price-hardcoded",
+      "level": "error",
+      "kind": "best practice",
+      "findings": 0
+    },
+    {
+      "id": "network-not-in-table",
+      "level": "info",
+      "kind": "best practice",
+      "findings": 1
+    }
+  ],
+  "config": {
+    "minSeverity": "info",
+    "failOn": "error",
+    "heartbeatMargin": 10
+  },
+  "findings": [
+    {
+      "id": "network-not-in-table",
+      "severity": "info",
+      "message": "The network \"linea\" of asset LINK on linea is not in the tool's table (ethereum, polygon, bnb, avalanche, gnosis, arbitrum, base, celo, mantle, megaeth, metis, optimism, scroll, soneium, x-layer, zksync), so whether it runs a sequencer that needs an uptime check was not judged. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org.",
+      "file": "examples/good/oracles.json",
+      "line": 187,
+      "column": 7,
+      "at": "examples/good/oracles.json:187",
+      "entry": "LINK on linea",
+      "fix": "Check by hand whether the network runs a sequencer and how the protocol learns that it is down, or name the network as the table does (docs/inputs.md).",
+      "kind": "best practice"
+    }
+  ],
+  "table": [
+    {
+      "asset": "WETH",
+      "network": "ethereum",
+      "role": "both",
+      "feed": "chainlink",
+      "fallback": "twap",
+      "heartbeat": 3600,
+      "maxStaleness": 3780,
+      "decimals": 8,
+      "scaleDecimals": 8,
+      "bounds": "100..100000",
+      "sequencer": null
+    },
+    {
+      "asset": "WBTC",
+      "network": "ethereum",
+      "role": "collateral",
+      "feed": "chainlink",
+      "fallback": "chainlink",
+      "heartbeat": 86400,
+      "maxStaleness": 90720,
+      "decimals": 8,
+      "scaleDecimals": "feed",
+      "bounds": "1000..1000000",
+      "sequencer": null
+    },
+    {
+      "asset": "USDC",
+      "network": "ethereum",
+      "role": "both",
+      "feed": "chainlink",
+      "fallback": "twap",
+      "heartbeat": 86400,
+      "maxStaleness": 90720,
+      "decimals": 8,
+      "scaleDecimals": 8,
+      "bounds": "0.5..1.05",
+      "sequencer": null
+    },
+    {
+      "asset": "WETH",
+      "network": "arbitrum",
+      "role": "collateral",
+      "feed": "chainlink",
+      "fallback": "twap",
+      "heartbeat": 86400,
+      "maxStaleness": 90720,
+      "decimals": 8,
+      "scaleDecimals": 8,
+      "bounds": "100..100000",
+      "sequencer": "on, 3600s"
+    },
+    {
+      "asset": "ARB",
+      "network": "arbitrum",
+      "role": "borrowable",
+      "feed": "chainlink",
+      "fallback": null,
+      "heartbeat": 86400,
+      "maxStaleness": 90720,
+      "decimals": 8,
+      "scaleDecimals": 8,
+      "bounds": "0.01..100",
+      "sequencer": "on, 3600s"
+    },
+    {
+      "asset": "WETH",
+      "network": "base",
+      "role": "collateral",
+      "feed": "chainlink",
+      "fallback": "twap",
+      "heartbeat": 1200,
+      "maxStaleness": 1260,
+      "decimals": 8,
+      "scaleDecimals": 8,
+      "bounds": "100..100000",
+      "sequencer": "on, 3600s"
+    },
+    {
+      "asset": "LINK",
+      "network": "linea",
+      "role": "borrowable",
+      "feed": "chainlink",
+      "fallback": null,
+      "heartbeat": 86400,
+      "maxStaleness": 90720,
+      "decimals": 8,
+      "scaleDecimals": 8,
+      "bounds": "0.5..1000",
+      "sequencer": null
+    }
+  ],
+  "notes": [],
+  "notice": "This report is an input to a review before the protocol is deployed: not a security audit and not a guarantee that the oracle of the protocol cannot be manipulated or fail.",
+  "result": {
+    "pass": true,
+    "failOn": "error",
+    "text": "PASS - no finding at or above error (1 info)"
+  }
+}

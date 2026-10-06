@@ -1,0 +1,1057 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "oracle-config-check",
+          "version": "1.0.0",
+          "informationUri": "https://github.com/INNERLUXES/oracle-config-check",
+          "rules": [
+            {
+              "id": "config-unreadable",
+              "name": "config-unreadable",
+              "shortDescription": {
+                "text": "the file is not JSON the reader can follow, or its top level is not an object, so no configuration was read"
+              },
+              "help": {
+                "text": "Write the configuration as one JSON object (docs/inputs.md), and fix the line named. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "field-missing",
+              "name": "field-missing",
+              "shortDescription": {
+                "text": "a field the checks need is not in the configuration: the protocol name or the assets, the name, network, role, feed or scaleDecimals of an asset, or a field its feed type needs"
+              },
+              "help": {
+                "text": "Add the field named; docs/inputs.md lists what each part of the configuration needs. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "field-unknown",
+              "name": "field-unknown",
+              "shortDescription": {
+                "text": "a key the tool does not read, often a misspelt one; its value was left out of every check"
+              },
+              "help": {
+                "text": "Correct the spelling to a key of docs/inputs.md, or remove the key. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "field-invalid",
+              "name": "field-invalid",
+              "shortDescription": {
+                "text": "a value of the wrong type or form: text where a number belongs, a role or feed type the tool does not know, seconds or decimals that are not whole numbers, a price that is not a plain decimal, or a field the feed type does not take"
+              },
+              "help": {
+                "text": "Write the value as docs/inputs.md shows: text for names and addresses, whole numbers for seconds and decimals, plain decimal numbers for prices and percents. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "asset-duplicate",
+              "name": "asset-duplicate",
+              "shortDescription": {
+                "text": "two assets share a name on one network (compared without case and outer spaces), so a reader cannot tell which line a finding comes from"
+              },
+              "help": {
+                "text": "Give each asset of a network a name of its own, or merge the two. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "secret-in-config",
+              "name": "secret-in-config",
+              "shortDescription": {
+                "text": "the configuration holds a key named for a private key, a seed or a mnemonic, or a value shaped like one; the tool never reads it and never shows it"
+              },
+              "help": {
+                "text": "Remove the key from the file and from the history of the repository, and treat it as exposed: move what it controls to a new key. An oracle configuration lists public addresses only. (input)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "input"
+              }
+            },
+            {
+              "id": "staleness-missing",
+              "name": "staleness-missing",
+              "shortDescription": {
+                "text": "a feed read through latestRoundData with no maxStaleness, or answer checks that do not list updatedAt, so the protocol takes an answer of any age"
+              },
+              "help": {
+                "text": "Give the asset a maxStaleness in seconds, from the heartbeat of the feed on its network, and list updatedAt in answerChecks. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "staleness-too-long",
+              "name": "staleness-too-long",
+              "shortDescription": {
+                "text": "maxStaleness is longer than the documented heartbeat of the feed plus the margin (--heartbeat-margin, 10 percent by default), so answers the feed should already have replaced are taken"
+              },
+              "help": {
+                "text": "Set maxStaleness to the heartbeat of the feed on this network plus a small margin, or record why the protocol accepts older answers. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "staleness-below-heartbeat",
+              "name": "staleness-below-heartbeat",
+              "shortDescription": {
+                "text": "maxStaleness is not longer than the documented heartbeat of the feed, so in a calm market every answer goes stale before the next one and reads revert"
+              },
+              "help": {
+                "text": "Set maxStaleness above the heartbeat of the feed on this network, with room for the delay before a round reaches the chain. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "bounds-missing",
+              "name": "bounds-missing",
+              "shortDescription": {
+                "text": "an asset read from a feed with no minPrice or no maxPrice, or a minPrice of 0, so an answer outside a sane range is taken as it is"
+              },
+              "help": {
+                "text": "Give the asset a minPrice above 0 and a maxPrice that the price of the asset should never reach, and pause or fall back on an answer outside them. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "decimals-mismatch",
+              "name": "decimals-mismatch",
+              "shortDescription": {
+                "text": "the decimals the protocol scales the answer by (scaleDecimals) are not the decimals the configuration gives for the feed"
+              },
+              "help": {
+                "text": "Scale by the decimals of the feed, or read decimals() from the feed at run time and write scaleDecimals as \"feed\". (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "sequencer-check-missing",
+              "name": "sequencer-check-missing",
+              "shortDescription": {
+                "text": "an asset on a rollup whose sequencer uptime feed the Chainlink page lists, with no sequencer check declared or with the check off"
+              },
+              "help": {
+                "text": "Read the sequencer uptime feed of the network before every read of a price, revert while it answers 1, and declare it under sequencer. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "sequencer-grace-missing",
+              "name": "sequencer-grace-missing",
+              "shortDescription": {
+                "text": "the sequencer check of an asset has no grace period, or a grace period of 0, so prices are used the moment the sequencer is back"
+              },
+              "help": {
+                "text": "Wait a grace period after the sequencer comes back, counted from startedAt of the uptime feed, such as the 3600 seconds of the example of the Chainlink page. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "answered-in-round-deprecated",
+              "name": "answered-in-round-deprecated",
+              "shortDescription": {
+                "text": "the answer checks list answeredInRound, which the Chainlink API reference marks as deprecated"
+              },
+              "help": {
+                "text": "Do not rest on answeredInRound for freshness; check updatedAt against maxStaleness. (documented)"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "kind": "documented"
+              }
+            },
+            {
+              "id": "bounds-inverted",
+              "name": "bounds-inverted",
+              "shortDescription": {
+                "text": "minPrice is equal to or above maxPrice, so no answer, or only one, passes the bounds"
+              },
+              "help": {
+                "text": "Write minPrice below maxPrice. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "bounds-exclude-reference",
+              "name": "bounds-exclude-reference",
+              "shortDescription": {
+                "text": "the referencePrice the configuration gives for the asset is outside its minPrice and maxPrice, so the bounds reject a price the team calls plausible"
+              },
+              "help": {
+                "text": "Widen the bounds so that they hold the plausible price with room on both sides, or correct the referencePrice. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "answer-checks-undeclared",
+              "name": "answer-checks-undeclared",
+              "shortDescription": {
+                "text": "an asset read through latestRoundData whose configuration does not say which of its values the protocol checks (answerChecks)"
+              },
+              "help": {
+                "text": "List in answerChecks what the protocol checks on every read: updatedAt, answerPositive and, where it applies, roundComplete. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "answer-positive-unchecked",
+              "name": "answer-positive-unchecked",
+              "shortDescription": {
+                "text": "the answer checks of an asset do not list answerPositive, so an answer of 0 or below would be used as a price"
+              },
+              "help": {
+                "text": "Revert on an answer of 0 or below, and list answerPositive in answerChecks. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "address-malformed",
+              "name": "address-malformed",
+              "shortDescription": {
+                "text": "a feed address or a sequencer feed address that is not 0x followed by 40 hex digits, or is the zero address"
+              },
+              "help": {
+                "text": "Write the address of the proxy as 0x and 40 hex digits, as the list of feed addresses of the network shows it. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "feed-shared",
+              "name": "feed-shared",
+              "shortDescription": {
+                "text": "one feed address on one network prices two different assets, so one of them may get the price of the other"
+              },
+              "help": {
+                "text": "Give each asset the feed of its own pair, or record that one asset is priced by the feed of the other on purpose, such as a wrapped asset by the feed of the asset under it. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "single-source-collateral",
+              "name": "single-source-collateral",
+              "shortDescription": {
+                "text": "an asset used as collateral with one price source and no fallback, or a fallback that is the same feed"
+              },
+              "help": {
+                "text": "Give the collateral a fallback of another kind (a second oracle or a time-weighted average price) and say what the protocol does when the two disagree, or record why one source is enough. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "pegged-price-hardcoded",
+              "name": "pegged-price-hardcoded",
+              "shortDescription": {
+                "text": "an asset used as collateral whose price is fixed in the configuration (feed type fixed), such as a stablecoin valued at 1 whatever the market says"
+              },
+              "help": {
+                "text": "Price the asset from a feed, with an upper bound such as a ceiling for a stablecoin, so that a loss of the peg reaches the protocol. (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            },
+            {
+              "id": "network-not-in-table",
+              "name": "network-not-in-table",
+              "shortDescription": {
+                "text": "the network is not in the tool's table of networks, so whether it needs a sequencer uptime check was not judged"
+              },
+              "help": {
+                "text": "Check by hand whether the network runs a sequencer and how the protocol learns that it is down, or name the network as the table does (docs/inputs.md). (best practice)"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "kind": "best practice"
+              }
+            }
+          ]
+        }
+      },
+      "artifacts": [
+        {
+          "location": {
+            "uri": "examples/bad/oracles.json"
+          }
+        }
+      ],
+      "results": [
+        {
+          "ruleId": "secret-in-config",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "The configuration holds the key \"privateKey\", which names a seed, a mnemonic or a private key. The tool never reads one, and the value is not shown. Fix: Remove the key from the file and from the history of the repository, and treat it as exposed: move what it controls to a new key. An oracle configuration lists public addresses only."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 4,
+                  "startColumn": 3
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "input",
+            "entry": null
+          }
+        },
+        {
+          "ruleId": "sequencer-check-missing",
+          "ruleIndex": 11,
+          "level": "error",
+          "message": {
+            "text": "Asset WETH on arbitrum is priced on Arbitrum, a rollup with a sequencer uptime feed, but the configuration declares no sequencer check. While the sequencer is down, most users cannot add collateral or repay, while some can still reach the chain through L1, and stale prices drive liquidations when it comes back. Fix: Read the sequencer uptime feed of the network before every read of a price, revert while it answers 1, and declare it under sequencer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "documented",
+            "entry": "WETH on arbitrum"
+          }
+        },
+        {
+          "ruleId": "decimals-mismatch",
+          "ruleIndex": 10,
+          "level": "error",
+          "message": {
+            "text": "Asset WBTC on arbitrum scales the answer by 18 decimals, but its feed answers with 8: every price is too low by a factor of 10,000,000,000, which lets positions be liquidated at once. The Chainlink API reference says decimals() gives the decimals of the answer. Fix: Scale by the decimals of the feed, or read decimals() from the feed at run time and write scaleDecimals as \"feed\"."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 49,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "documented",
+            "entry": "WBTC on arbitrum"
+          }
+        },
+        {
+          "ruleId": "sequencer-grace-missing",
+          "ruleIndex": 12,
+          "level": "error",
+          "message": {
+            "text": "The sequencer check of asset WBTC on arbitrum has no gracePeriod, so prices are used the moment the sequencer is back, before users who could not reach the chain had a chance to add collateral or repay. The Chainlink page asks for a grace period, and its example waits 3600 seconds. Fix: Wait a grace period after the sequencer comes back, counted from startedAt of the uptime feed, such as the 3600 seconds of the example of the Chainlink page."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 50,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "documented",
+            "entry": "WBTC on arbitrum"
+          }
+        },
+        {
+          "ruleId": "pegged-price-hardcoded",
+          "ruleIndex": 21,
+          "level": "error",
+          "message": {
+            "text": "The price of asset USDC on base is fixed in the configuration at 1, and the asset is used as collateral: if it loses its peg, the protocol still values it at 1, lends against it at that value and does not liquidate the loans it backs. The Chainlink page on selecting feeds warns that stablecoins and wrapped assets can lose their peg. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: Price the asset from a feed, with an upper bound such as a ceiling for a stablecoin, so that a loss of the peg reaches the protocol."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 65,
+                  "startColumn": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "USDC on base"
+          }
+        },
+        {
+          "ruleId": "staleness-missing",
+          "ruleIndex": 6,
+          "level": "error",
+          "message": {
+            "text": "Asset ARB on arbitrum has no maxStaleness, so the protocol takes an answer of any age; its feed has a heartbeat of 86,400 seconds (24 hours), and an answer older than that means the feed has stopped or lags. The Chainlink overview asks an application to compare updatedAt with the heartbeat and to pause when the answer is older. Fix: Give the asset a maxStaleness in seconds, from the heartbeat of the feed on its network, and list updatedAt in answerChecks."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 71,
+                  "startColumn": 5
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "documented",
+            "entry": "ARB on arbitrum"
+          }
+        },
+        {
+          "ruleId": "address-malformed",
+          "ruleIndex": 18,
+          "level": "error",
+          "message": {
+            "text": "The address of the sequencer uptime feed of asset ARB on arbitrum is \"0x5e0\", which has 3 characters after 0x, not 40; an address is 0x followed by 40 hex digits. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: Write the address of the proxy as 0x and 40 hex digits, as the list of feed addresses of the network shows it."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 87,
+                  "startColumn": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "ARB on arbitrum"
+          }
+        },
+        {
+          "ruleId": "sequencer-grace-missing",
+          "ruleIndex": 12,
+          "level": "error",
+          "message": {
+            "text": "The sequencer check of asset ARB on arbitrum has a gracePeriod of 0, so prices are used the moment the sequencer is back, before users who could not reach the chain had a chance to add collateral or repay. The Chainlink page asks for a grace period, and its example waits 3600 seconds. Fix: Wait a grace period after the sequencer comes back, counted from startedAt of the uptime feed, such as the 3600 seconds of the example of the Chainlink page."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 88,
+                  "startColumn": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "documented",
+            "entry": "ARB on arbitrum"
+          }
+        },
+        {
+          "ruleId": "bounds-inverted",
+          "ruleIndex": 14,
+          "level": "error",
+          "message": {
+            "text": "The maxPrice of asset LINK on optimism is 5, below its minPrice of 30, so no price passes the bounds and every read reverts or falls back. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: Write minPrice below maxPrice."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 111,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "LINK on optimism"
+          }
+        },
+        {
+          "ruleId": "bounds-exclude-reference",
+          "ruleIndex": 15,
+          "level": "error",
+          "message": {
+            "text": "The referencePrice of asset DAI on ethereum is 1.25, above its maxPrice of 1.1: the bounds reject a price the configuration itself calls plausible, so reads revert or fall back at that price. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: Widen the bounds so that they hold the plausible price with room on both sides, or correct the referencePrice."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 144,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "DAI on ethereum"
+          }
+        },
+        {
+          "ruleId": "field-missing",
+          "ruleIndex": 1,
+          "level": "error",
+          "message": {
+            "text": "The feed of asset USDT on ethereum is of type chainlink, which needs address, heartbeat, decimals; the configuration has no heartbeat. Fix: Add the field named; docs/inputs.md lists what each part of the configuration needs."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 156,
+                  "startColumn": 15
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "input",
+            "entry": null
+          }
+        },
+        {
+          "ruleId": "asset-duplicate",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "Asset 9 is weth on Arbitrum, as is asset 1 at line 7; a finding cannot be traced to one of them. Fix: Give each asset of a network a name of its own, or merge the two."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 197,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "input",
+            "entry": "weth on Arbitrum"
+          }
+        },
+        {
+          "ruleId": "sequencer-check-missing",
+          "ruleIndex": 11,
+          "level": "error",
+          "message": {
+            "text": "Asset weth on Arbitrum is priced on Arbitrum, a rollup with a sequencer uptime feed, but the configuration turns the sequencer check off. While the sequencer is down, most users cannot add collateral or repay, while some can still reach the chain through L1, and stale prices drive liquidations when it comes back. Fix: Read the sequencer uptime feed of the network before every read of a price, revert while it answers 1, and declare it under sequencer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 213,
+                  "startColumn": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "documented",
+            "entry": "weth on Arbitrum"
+          }
+        },
+        {
+          "ruleId": "field-invalid",
+          "ruleIndex": 3,
+          "level": "error",
+          "message": {
+            "text": "The role of asset CRV on ethereum is \"collateralized\"; it must be collateral, borrowable or both. Fix: Write the value as docs/inputs.md shows: text for names and addresses, whole numbers for seconds and decimals, plain decimal numbers for prices and percents."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 224,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "input",
+            "entry": null
+          }
+        },
+        {
+          "ruleId": "single-source-collateral",
+          "ruleIndex": 20,
+          "level": "warning",
+          "message": {
+            "text": "Asset WETH on arbitrum is used as collateral and has one price source and no fallback, so a feed that stops, lags or is pushed off the market moves every loan it backs at once, and the protocol has nothing to compare it with. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: Give the collateral a fallback of another kind (a second oracle or a time-weighted average price) and say what the protocol does when the two disagree, or record why one source is enough."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "WETH on arbitrum"
+          }
+        },
+        {
+          "ruleId": "staleness-too-long",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "Asset WETH on arbitrum accepts answers up to 172,800 seconds (48 hours) old, but the configuration gives its feed a heartbeat of 86,400 seconds (24 hours); with the margin of 10 percent the limit is 95,040 seconds. An answer older than that is one the feed should already have replaced, and liquidations and borrows go on at a price that may be gone. Fix: Set maxStaleness to the heartbeat of the feed on this network plus a small margin, or record why the protocol accepts older answers."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "documented",
+            "entry": "WETH on arbitrum"
+          }
+        },
+        {
+          "ruleId": "answer-positive-unchecked",
+          "ruleIndex": 17,
+          "level": "warning",
+          "message": {
+            "text": "The answer checks of asset WETH on arbitrum do not list answerPositive, so an answer of 0 or below would be used as a price; a feed that was shut down gives 0 from latestAnswer. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: Revert on an answer of 0 or below, and list answerPositive in answerChecks."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 23,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "WETH on arbitrum"
+          }
+        },
+        {
+          "ruleId": "staleness-below-heartbeat",
+          "ruleIndex": 8,
+          "level": "warning",
+          "message": {
+            "text": "Asset WBTC on arbitrum accepts answers up to 3,600 seconds (1 hour) old, shorter than the heartbeat of its feed, 86,400 seconds (24 hours). In a calm market the feed is written only when the heartbeat runs out, and the round can reach the chain a little after it, so reads revert for part of every heartbeat and liquidations and repayments stop with them. Fix: Set maxStaleness above the heartbeat of the feed on this network, with room for the delay before a round reaches the chain."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 45,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "documented",
+            "entry": "WBTC on arbitrum"
+          }
+        },
+        {
+          "ruleId": "answer-checks-undeclared",
+          "ruleIndex": 16,
+          "level": "warning",
+          "message": {
+            "text": "Asset ARB on arbitrum is read through latestRoundData, but its configuration has no answerChecks, so it does not say whether the protocol checks the time of the answer, that the answer is above 0, or that the round is complete. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: List in answerChecks what the protocol checks on every read: updatedAt, answerPositive and, where it applies, roundComplete."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 71,
+                  "startColumn": 5
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "ARB on arbitrum"
+          }
+        },
+        {
+          "ruleId": "bounds-missing",
+          "ruleIndex": 9,
+          "level": "warning",
+          "message": {
+            "text": "Asset ARB on arbitrum has no maxPrice, so an answer far outside any price the asset can have is used as it is. On most feeds minAnswer and maxAnswer no longer stop such an answer; the Chainlink pages leave the limits to the application. Fix: Give the asset a minPrice above 0 and a maxPrice that the price of the asset should never reach, and pause or fall back on an answer outside them."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 71,
+                  "startColumn": 5
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "documented",
+            "entry": "ARB on arbitrum"
+          }
+        },
+        {
+          "ruleId": "single-source-collateral",
+          "ruleIndex": 20,
+          "level": "warning",
+          "message": {
+            "text": "Asset LINK on optimism is used as collateral and borrowed and its fallback is the same feed as its primary feed, so a feed that stops, lags or is pushed off the market moves every loan it backs at once, and the protocol has nothing to compare it with. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: Give the collateral a fallback of another kind (a second oracle or a time-weighted average price) and say what the protocol does when the two disagree, or record why one source is enough."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 105,
+                  "startColumn": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "LINK on optimism"
+          }
+        },
+        {
+          "ruleId": "feed-shared",
+          "ruleIndex": 19,
+          "level": "warning",
+          "message": {
+            "text": "The feed of asset USDT on ethereum has the address of the feed of asset DAI on ethereum at line 131, on the same network, so the two assets get one price. When one of them is a wrapped asset priced by the feed of the asset under it, record that choice; otherwise one of them has the wrong feed. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: Give each asset the feed of its own pair, or record that one asset is priced by the feed of the other on purpose, such as a wrapped asset by the feed of the asset under it."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 159,
+                  "startColumn": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "USDT on ethereum"
+          }
+        },
+        {
+          "ruleId": "field-unknown",
+          "ruleIndex": 2,
+          "level": "warning",
+          "message": {
+            "text": "The key \"Heartbeat\" of the feed of asset USDT on ethereum is not one the tool reads, so its value was left out of every check. Did you mean \"heartbeat\"? The keys of the feed of asset USDT on ethereum are type, pair, address, heartbeat, deviation, decimals, window, price, notes. Fix: Correct the spelling to a key of docs/inputs.md, or remove the key."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 160,
+                  "startColumn": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "input",
+            "entry": null
+          }
+        },
+        {
+          "ruleId": "answered-in-round-deprecated",
+          "ruleIndex": 13,
+          "level": "note",
+          "message": {
+            "text": "The answer checks of asset WETH on arbitrum list answeredInRound, which the Chainlink API reference marks as deprecated; it says nothing of the age of the answer, which updatedAt and maxStaleness do. Fix: Do not rest on answeredInRound for freshness; check updatedAt against maxStaleness."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 25,
+                  "startColumn": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "documented",
+            "entry": "WETH on arbitrum"
+          }
+        },
+        {
+          "ruleId": "network-not-in-table",
+          "ruleIndex": 22,
+          "level": "note",
+          "message": {
+            "text": "The network \"linea\" of asset wstETH on linea is not in the tool's table (ethereum, polygon, bnb, avalanche, gnosis, arbitrum, base, celo, mantle, megaeth, metis, optimism, scroll, soneium, x-layer, zksync), so whether it runs a sequencer that needs an uptime check was not judged. This is a best practice of this tool, not a rule in the Chainlink pages on Data Feeds or on ethereum.org. Fix: Check by hand whether the network runs a sequencer and how the protocol learns that it is down, or name the network as the table does (docs/inputs.md)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/oracles.json",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 176,
+                  "startColumn": 7
+                }
+              }
+            }
+          ],
+          "properties": {
+            "kind": "best practice",
+            "entry": "wstETH on linea"
+          }
+        }
+      ],
+      "properties": {
+        "notice": "This report is an input to a review before the protocol is deployed: not a security audit and not a guarantee that the oracle of the protocol cannot be manipulated or fail.",
+        "result": "FAIL - 14 findings at or above error (14 error, 9 warning, 2 info)",
+        "sources": [
+          "https://docs.chain.link/data-feeds/overview",
+          "https://docs.chain.link/architecture-overview/architecture-decentralized-model",
+          "https://docs.chain.link/data-feeds/api-reference",
+          "https://docs.chain.link/data-feeds/using-data-feeds",
+          "https://docs.chain.link/data-feeds/l2-sequencer-feeds",
+          "https://docs.chain.link/data-feeds/selecting-data-feeds",
+          "https://ethereum.org/en/developers/docs/smart-contracts/security/"
+        ]
+      }
+    }
+  ]
+}
