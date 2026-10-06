@@ -1,0 +1,18 @@
+# Every change is reviewed by a maintainer.
+* @innerluxesdev
+
+# The JSON reader, the reading of the file, the search for keys and seeds, the configuration reader, the decimals, the
+# networks, the checks, the points of the public pages, the rules and the output decide every result and what is read
+# from the disk; changes need extra care.
+/src/json.js @innerluxesdev
+/src/files.js @innerluxesdev
+/src/secrets.js @innerluxesdev
+/src/config.js @innerluxesdev
+/src/decimal.js @innerluxesdev
+/src/networks.js @innerluxesdev
+/src/analyze.js @innerluxesdev
+/src/data.js @innerluxesdev
+/src/rules.js @innerluxesdev
+/src/check.js @innerluxesdev
+/src/report.js @innerluxesdev
+/research/ @innerluxesdev
